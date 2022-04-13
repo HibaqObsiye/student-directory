@@ -1,15 +1,15 @@
 students = [
-  {name: "Dr. Hannibal Lecter", cohort: :november},
-  {name: "Darth Vader", cohort: :november},
-  {name: "Nurse Ratched", cohort: :november},
-  {name: "Michael Corleone", cohort: :november},
-  {name: "Alex DeLarge", cohort: :november},
-  {name: "The Wicked Witch of the West", cohort: :november},
-  {name: "Terminator", cohort: :november},
-  {name: "Freddy Krueger", cohort: :november},
-  {name: "The Joker", cohort: :november},
-  {name: "Joffrey Baratheon", cohort: :november},
-  {name: "Norman Bates", cohort: :november}
+  {name: "Dr. Hannibal Lecter", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
+  {name: "Darth Vader", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
+  {name: "Nurse Ratched", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
+  {name: "Michael Corleone", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
+  {name: "Alex DeLarge", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
+  {name: "The Wicked Witch of the West", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
+  {name: "Terminator", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
+  {name: "Freddy Krueger", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
+  {name: "The Joker", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
+  {name: "Joffrey Baratheon", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
+  {name: "Norman Bates", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"}
 ]
      
 def print_header
@@ -24,7 +24,7 @@ def input_students
    students = []
    name = gets.chomp
   while !name.empty? do
-    students << {name: name, cohort: :november}
+    students << {name: name, cohort: :november, hobby: name, country: name, height: name}
     puts " Now we have #{students.count} students"
     name = gets.chomp
   end
@@ -53,6 +53,12 @@ while students do
     puts students
     break
 end
+
+until false do
+    puts students
+    break
+end
+
 
 students = input_students
 print_header
