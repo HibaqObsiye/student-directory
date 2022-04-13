@@ -49,6 +49,11 @@ students.map do |hash|
  puts hash[:name] if hash[:name].length <= 11
 end.compact
 
+while students do
+    puts students
+    break
+end
+
 students = input_students
 print_header
 print(students)
