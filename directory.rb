@@ -11,28 +11,30 @@ students = [
   {name: "Joffrey Baratheon", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
   {name: "Norman Bates", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"}
 ]
+
+@width = 50
      
 def print_header
-  puts "The students of Villains Academy"
-  puts "-------------"
+  puts "The students of Villains Academy".center(@wdith)
+  puts "-------------".center(@wdith)
 end
 
 def input_students
-   puts "Please enter the name of the student"
-   puts "To finish, just hit return twice"
+   puts "Please enter the name of the student".center(@wdith)
+   puts "To finish, just hit return twice".center(@wdith)
  
    students = []
    name = gets.chomp
   while !name.empty? do
     students << {name: name, cohort: :november, hobby: name, country: name, height: name}
-    puts " Now we have #{students.count} students"
+    puts " Now we have #{students.count} students".center(@wdith)
     name = gets.chomp
   end
   students
 end
 
 def print_footer(name)
-  print "Overall, we have #{name.count} great students "
+  print "Overall, we have #{name.count} great students ".center(@wdith)
 end
 
  students.each_with_index do |student, index|
@@ -55,7 +57,7 @@ while students do
 end
 
 until false do
-    puts students
+    puts students.center(@wdith)
     break
 end
 
