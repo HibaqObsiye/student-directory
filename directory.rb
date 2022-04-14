@@ -36,7 +36,7 @@ def print_footer(name)
 end
 
  students.each_with_index do |student, index|
-   puts "#{index}.#{student}"
+   puts "#{index+1}. #{student[:name]} (#{student[:cohort]} cohort)"
 end
 
 
@@ -58,6 +58,8 @@ until false do
     puts students
     break
 end
+
+
 
 
 students = input_students
