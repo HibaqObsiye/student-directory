@@ -154,8 +154,20 @@ def print_by_cohort(students)
 end
 
 def print_footer(names)
+    if !students.empty?
   puts "Overall, we have #{names.count} great student".center(@width) if names.count == 1
   puts "Overall, we have #{names.count} great students".center(@width) if names.count > 1
+end
+
+def print_menu
+  puts "1. Input the students"
+  puts "2. Show the students"
+  puts "9. Exit" # 9 because we'll be adding more items  
+end
+def show_students
+  print_header
+  print(students)
+  print_footer(students)
 end
 
 students = input_students
