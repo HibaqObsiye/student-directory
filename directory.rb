@@ -1,67 +1,186 @@
-students = [
-  {name: "Dr. Hannibal Lecter", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
-  {name: "Darth Vader", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
-  {name: "Nurse Ratched", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
-  {name: "Michael Corleone", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
-  {name: "Alex DeLarge", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
-  {name: "The Wicked Witch of the West", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
-  {name: "Terminator", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
-  {name: "Freddy Krueger", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
-  {name: "The Joker", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
-  {name: "Joffrey Baratheon", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"},
-  {name: "Norman Bates", cohort: :november, hobby: "Football", country: "Jamaica", height: "6 foot"}
-]
+
+require 'csv'
+
+@loaded_filename = ""
+@default_filename = "students.csv"
+@save_pending = false
+
+@students = [] # an empty array accessible to all methods
+
+@cohorts = {
+  January: 15,
+  February: 25,
+  March: 25,
+  April: 20,
+  May: 10,
+  June: 25,
+  July: 25,
+  August: 15,
+  September: 0,
+  October: 0,
+  November: 0,
+  December: 8
+}
+
+
+#helpers
+def pluralize_students(n)
+  n == 1 ? "#{n} great student" : "#{n} great students"
+end
 
 @width = 50
 
-@students = []
+def divider
+  puts "-------------".center(@width)
+end
 
-@cohorts = {
-  January: 0,
-  February: 0,
-  March: 25,
-  April: 25,
-  May: 25,
-  June: 25,
-  July: 25,
-  August: 25,
-  September: 25,
-  October: 25,
-  November: 25,
-  December: 25
-}
+def header_menu
+  divider
+  puts "-- Student Directory".center(@width)
+  puts "-- Using file: #{@loaded_filename}".center(@width)
+  divider
+end
+
+
+def interactive_main_menu
+  loop do
+    print_main_menu
+    process_main_menu(STDIN.gets.chomp)
+  end
+end
+
+def interactive_search_menu
+  loop do
+    print_search_menu
+    process_search_menu(STDIN.gets.chomp)
+  end
+end
+
+
+def print_main_menu
+  header_menu
+  puts
+  puts  "*** MAIN MENU"
+  puts  "1.  Input students"
+  puts  "2.  Show students"
+  puts  "3.  Search students"
+  puts  "4.  Save the list to file" + save_pending?
+  puts  "5.  Load the list from file"
+  puts  "9.  Exit"  
+  puts
+end
+
+def print_search_menu
+  puts
+  puts "Student Search:"
+  puts "1. Search by First Letter"
+  puts "2. Search by Name Length"
+  puts "3. Back to Main Menu"
+  puts
+end
+
+
+def process_search_menu(selection)
+  case selection
+  when "1"
+    search_by_first_letter
+  when "2"
+    search_by_name_length
+  when "3"
+    interactive_main_menu
+  else
+    puts "I don't know what you meant, please try again"
+  end
+end
+
+def process_main_menu(selection)
+  case selection
+  when "1"
+    input_students
+  when "2"
+    show_students
+  when "3"
+    interactive_search_menu
+  when "4"
+    puts  "Please enter the name of the file (eg. data.csv)"
+    save_filename = gets.chomp
+    save_filename.empty? ? save_students : save_students(save_filename)
+  when "5"
+    puts  "Please enter the name of the file (eg. data.csv)" 
+    puts  "or leave empty to open the default file"
+    load_filename = gets.chomp
+    load_filename.empty? ? load_students : load_students(load_filename)
+  when "9"
+    confirm_exit  #this will cause the program to terminate
+  else
+    puts "I don't know what you meant, please try again"
+  end
+end
+
+def confirm_exit
+  if @save_pending == true
+    puts "You have unsaved changes. Are you sure you want to exit? (y/n)"
+    choice = STDIN.gets.chomp.downcase
+    if choice == "y"
+      exit
+    elsif choice =="n"
+      interactive_main_menu
+    else
+      puts "Invalid option, please enter y or n"
+      confirm_exit
+    end
+  else
+    exit
+  end
+end
+
+def save_pending?
+  if @save_pending == true
+    " (Changes Pending)"
+  else
+    ""
+  end
+end
+
+def show_students
+  print_header
+  print_students_list
+  print_footer
+end
+
 
 def create_new_student
-  puts "Do you want to create a new student record? (y/n)".center(@width)
-  continue = gets.chomp
+  puts "Do you want to create a new student? (y/n)".center(@width)
+  continue = STDIN.gets.chomp.downcase
   if continue == "y"
     return true
   elsif continue == "n"
     return false
   else
-    puts "Please enter \"y\" or \"n\"".center(@width)
+    puts "Invalid choice - please enter y or n".center(@width)
   end
   create_new_student
 end
 
+
 def add_cohort
-  next_cohort = :March
-  puts "\n"
+  next_cohort = :December
+  puts
   puts "Available cohorts:".center(@width)
-  puts "(Month / Spots left)".center(@width)
+  puts "(Month / Vacancies)".center(@width)
   month_number = 1
   @cohorts.each do |month, vacancies|
-    puts "(#{month_number}) #{month} - spots available: #{vacancies}".center(@width)
+    puts "(#{month_number}) #{month} - vacancies: #{vacancies}".center(@width)
     month_number +=1
   end
-  puts "\n"
+  puts
   puts "Please enter the month number of the cohort would like to join".center(@width)
-  cohort = gets.chomp
+  cohort = STDIN.gets.chomp
   case cohort
   when "1"
-    cohort = :March
+    cohort = :January
   when "2"
-    cohort = :March
+    cohort = :February
   when "3"
     cohort = :March
   when "4"
@@ -82,8 +201,11 @@ def add_cohort
     cohort = :November
   when "12"
     cohort = :December
+  when ""
+    puts "No input, the upcoming #{next_cohort} cohort will be added".center(@width)
+    cohort = next_cohort
   else
-    puts "Input not recognsied - the #{next_cohort} cohort was added".center(@width)
+    puts "Input not recognised, the upcoming #{next_cohort} cohort was added".center(@width)
   end
   cohort
 end
@@ -92,85 +214,179 @@ def input_students
   continue = create_new_student
   while continue
     puts "Please enter the name of the student".center(@width)
-    name = gets.chomp
+    name = STDIN.gets.chomp
     cohort = add_cohort
-    place_of_birth = add_place_of_birth
+    puts "Please enter the country of birth".center(@width)
+    country_of_birth = STDIN.gets.chomp
     hobbies = add_hobbies
-    @students << { name: name, cohort: cohort,
-                  place_of_birth: place_of_birth, hobbies: hobbies }
-    puts "Now we have #{@students.count} students".center(@width)
+    add_student(name, cohort, country_of_birth, hobbies)
+    puts "Now we have #{pluralize_students @students.count}".center(@width)
+    @save_pending = true
     continue = create_new_student
   end
-  @students
-end
-
-def add_place_of_birth
-  places_of_birth = []
-  puts "Please enter the student's place of birth".center(@width)
-  puts "(To finish, just hit return twice)".center(@width)
-  place_of_birth = gets.chomp
-  while !place_of_birth.empty?
-    places_of_birth << place_of_birth
-    place_of_birth = gets.chomp
-  end
-  places_of_birth
 end
 
 def add_hobbies
   hobbies = []
   puts "Please enter student's hobbies".center(@width)
   puts "(To finish, just hit return twice)".center(@width)
-  hobby = gets.chomp
+  hobby = STDIN.gets.chomp
   while !hobby.empty?
     hobbies << hobby
-    hobby = gets.chomp
+    hobby = STDIN.gets.chomp
   end
-  hobbies
+  hobbies.join(" ")
 end
+
+def add_student(name, cohort, country_of_birth, hobbies)
+  @students << {name: name, cohort: cohort.to_sym, country_of_birth: country_of_birth, hobbies: hobbies}
+end
+
+def save_students(filename = @default_filename)
+  # open the file for writing using CSV class
+  CSV.open(filename, "wb") do |csv|
+    # iterate over the array of students
+    @students.each do |student|
+      csv << [student[:name], student[:cohort], student[:country_of_birth], student[:hobbies]]
+    end
+    @loaded_filename = filename
+    @save_pending = false
+    puts
+    puts  "*** Saved successfully to #{filename} ***"
+    puts
+  end
+end
+
+def try_load_students
+  filename = ARGV.first     # first argument from the command line
+  if filename.nil?
+    puts
+    puts "Loaded the default file: #{@default_filename}"
+    puts
+    @loaded_filename = @default_filename
+    load_students
+    return
+  end  
+  if File.exists?(filename) # if it exists
+    @loaded_filename = filename
+    load_students(filename)
+  else      # if it doesn't exist
+    puts "Sorry, #{filename} not found."
+    exit    # quit the program
+  end
+end
+
+def load_students(filename = @default_filename)
+  if File.exists?(filename)
+    CSV.foreach(filename) do |row|
+      name, cohort, country_of_birth, hobbies = row
+      add_student(name, cohort, country_of_birth, hobbies)
+    end
+    @loaded_filename = filename
+    puts
+    puts  "*** File loaded successfully ***"
+    puts  "*** Using: #{filename}"
+    puts
+  else
+    if filename == @default_filename
+      puts "The default file #{@default_filename} was not found"
+      File.write("students.csv", "")
+      @loaded_filename = filename
+      puts "A new #{@default_filename} was created"
+    else 
+      puts "*** WARNING *** File #{filename} not found"
+      puts "Using #{@loaded_filename}"
+    end
+  end  
+end
+
 
 def print_header
-  puts "The students of my cohort at Makers".center(@width)
-  puts "-------------".center(@width)
-end
-
-def print(students)
-  i = 0
-  while i < students.count
-  puts "#{i + 1}. #{students[i][:name]}\nPOB: #{students[i][:place_of_birth][0]}\nHobbies: #{students[i][:hobbies].join(", ")}\n(#{students[i][:cohort]} cohort)".center(@width)
-  i += 1
+  if !@students.empty?
+    puts "The students of Villains Academy".center(@width)
+    divider
+  else
   end
 end
 
-def print_by_cohort(students)
-  cohorts = @students.map do |student|
-    student[:cohort]
+
+def print_students_list
+  if @students.empty?
+    puts "No students available".center(@width)
+  else
+    i = 0
+    while i < @students.count
+      puts "#{i + 1}. #{@students[i][:name]}, #{@students[i][:country_of_birth]} (#{@students[i][:cohort]})".center(@width)
+      i += 1
+    end
   end
-  cohorts.uniq.each do |cohort|
-    puts "#{cohort} cohort".upcase.center(@width)
-      @students.each do |student|
-        puts student[:name] if student[:cohort] == cohort
-      end
+end
+
+def print_students_list_by_cohort
+  if @students.empty?
+    puts "No students available".center(@width)
+  else
+    cohorts = @students.map do |student|
+      student[:cohort]
+    end
+    cohorts.uniq.each do |cohort|
+      puts "#{cohort} cohort".upcase.center(@width)
+        @students.each do |student|
+          puts student[:name] if student[:cohort] == cohort
+        end
+    end
   end
 end
 
-def print_footer(names)
-    if !students.empty?
-  puts "Overall, we have #{names.count} great student".center(@width) if names.count == 1
-  puts "Overall, we have #{names.count} great students".center(@width) if names.count > 1
+
+def search_by_first_letter
+  if @students.empty?
+    puts "No students available".center(@width)
+  else
+    puts "Student names beginning with: (Please enter a letter)".center(@width)
+    letter = gets.strip
+    number_of_matches = 0
+    @students.each do |student|
+      if student[:name].start_with?(letter.upcase, letter.downcase)
+        puts "#{student[:name]}, #{student[:country_of_birth]} (#{student[:cohort]} cohort)".center(@width)
+        number_of_matches += 1
+      else
+      end  
+    end
+    puts
+    puts "We have #{pluralize_students number_of_matches} whose name begins with #{letter}".center(@width)
+    puts
+  end
 end
 
-def print_menu
-  puts "1. Input the students"
-  puts "2. Show the students"
-  puts "9. Exit" # 9 because we'll be adding more items  
-end
-def show_students
-  print_header
-  print(students)
-  print_footer(students)
+def search_by_name_length
+  if @students.empty?
+    puts "No students available".center(@width)
+  else
+    puts "Names with maximum characters of: (Please enter a number)".center(@width)
+    max_length = gets.strip
+    number_of_matches = 0
+    @students.each do |student|
+      if student[:name].length <= max_length.to_i
+        puts "#{student[:name]}, #{student[:country_of_birth]} (#{student[:cohort]} cohort)".center(@width)
+        number_of_matches += 1
+      else
+      end  
+    end
+    puts
+    puts "We have #{pluralize_students number_of_matches} with a name of maximum #{max_length} characters".center(@width)
+    puts
+  end
 end
 
-students = input_students
-print_header
-print_by_cohort(students)
-print_footer(students)
+
+def print_footer
+  if !@students.empty?
+    puts "Overall, we have #{pluralize_students @students.count}".center(@width)
+  else
+  end
+end
+
+#call the interactive menu
+try_load_students
+interactive_main_menu
